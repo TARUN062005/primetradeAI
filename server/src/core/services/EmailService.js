@@ -11,18 +11,20 @@ class EmailService {
     this.templatesPath = path.join(__dirname, "../../../templates/emails");
 
     // ✅ Create transporter using 'service: gmail' (Simplest & Most Reliable for Gmail)
+    // ✅ Using manual SMTP settings with forced IPv4 to fix ETIMEDOUT
     this.transporter = nodemailer.createTransport({
-      service: "gmail", // Automatically sets host=smtp.gmail.com, port=465, secure=true
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // true for 465, false for other ports (587 uses STARTTLS)
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
-      // Connection fail-safes
-      connectionTimeout: 10000, // 10 seconds
-      greetingTimeout: 5000,    // 5 seconds
-      socketTimeout: 10000,     // 10 seconds
-      logger: !isProduction,    // Log in dev
-      debug: !isProduction      // Debug in dev
+      tls: {
+        rejectUnauthorized: false
+      },
+      // ⚠️ CRITICAL: Force IPv4 usage to avoid IPv6 routing issues on Render
+      family: 4
     });
 
     // Ensure template directory & templates
