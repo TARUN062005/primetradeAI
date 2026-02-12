@@ -11,10 +11,6 @@ node_modules
 dist
 dist-ssr
 .env
-public 
-public/firebase-messaging-sw.js
-public/firebase-messaging-sw.js
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
