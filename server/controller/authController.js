@@ -275,6 +275,46 @@ class AuthController {
       });
 
     } catch (error) {
+      // Handle "User already exists" scenario
+      if (error.message === 'User already exists with this email') {
+        try {
+          const user = await userService.findByEmail(req.body.email);
+
+          // If user exists but is NOT verified, resend verification email
+          if (user && !user.emailVerified && user.authProvider === 'LOCAL') {
+
+            // Delete old tokens
+            await prisma.otp.deleteMany({
+              where: { userId: user.id, type: 'VERIFICATION' }
+            });
+
+            // Generate new token
+            const verificationToken = authManager.generateMagicToken(user.email);
+            const decoded = authManager.verifyMagicToken(verificationToken.token);
+
+            await userService.createOTP({
+              userId: user.id,
+              identifier: user.email,
+              code: decoded.token,
+              type: 'VERIFICATION',
+              expiresAt: verificationToken.expiresAt
+            });
+
+            const clientUrl = getPrimaryClientUrl();
+            const verifyUrl = `${clientUrl}/verify-email?token=${verificationToken.token}`;
+            await emailService.sendVerificationEmail(user.email, verifyUrl, user.name);
+
+            return res.status(200).json({
+              success: true,
+              message: 'Account exists but refers to an unverified email. A new verification link has been sent.',
+              requiresVerification: true
+            });
+          }
+        } catch (resendErr) {
+          console.error('Failed to resend verification on duplicate register:', resendErr);
+        }
+      }
+
       res.status(400).json({ success: false, message: error.message });
     }
   }
@@ -451,8 +491,9 @@ class AuthController {
   }
 
   async login(req, res) {
+    const { email, password } = req.body; // Move outside try block
+
     try {
-      const { email, password } = req.body;
       const result = await localStrategy.authenticate({ email, password });
 
       await ActivityService.log(result.user.id, 'Login Success', 'Logged in via Password', req.ip);
@@ -475,6 +516,7 @@ class AuthController {
 
             // Generate new verification token
             const verificationToken = authManager.generateMagicToken(email);
+            // Store actual token used for verification
             const decoded = authManager.verifyMagicToken(verificationToken.token);
 
             await userService.createOTP({
@@ -496,7 +538,7 @@ class AuthController {
 
           return res.status(403).json({
             success: false,
-            message: 'Please verify your email first. A new verification link has been sent to your email.',
+            message: 'Email not verified. A new verification link has been sent to your email.',
             code: 'EMAIL_NOT_VERIFIED',
             requiresVerification: true
           });
