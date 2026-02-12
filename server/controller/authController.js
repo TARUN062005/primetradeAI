@@ -78,6 +78,11 @@ function renderHtmlMessage(title, message) {
 }
 
 function getPrimaryClientUrl() {
+  // Always prefer the explicitly set user dashboard URL
+  if (process.env.CLIENT_USER) {
+    return process.env.CLIENT_USER;
+  }
+
   if (process.env.CLIENT_URL) {
     const urls = process.env.CLIENT_URL.split(',').map(url => url.trim());
     return urls[0];
