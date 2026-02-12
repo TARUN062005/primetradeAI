@@ -73,8 +73,8 @@ const LandingPage = () => {
           <button className="w-full sm:w-auto border border-slate-200 px-10 py-4 rounded-2xl text-lg font-bold text-slate-700 hover:bg-slate-50 transition-colors">
             <Link
             to="https://github.com/TARUN062005/primetradeAI/blob/main/README.MD"
-            className="w-full sm:w-auto bg-primary-600 text-white px-10 py-4 rounded-2xl text-lg font-bold flex items-center justify-center shadow-xl shadow-primary-200 hover:scale-105 transition-transform"
-          >View Documentation</Link>
+         className="w-full sm:w-auto bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white px-8 py-3.5 rounded-2xl text-lg font-semibold flex items-center justify-center gap-2 shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2"
+  >View Documentation</Link>
           </button>
         </div>
       </header>
