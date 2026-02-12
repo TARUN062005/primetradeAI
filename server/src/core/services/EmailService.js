@@ -62,7 +62,7 @@ class EmailService {
       const urls = process.env.CLIENT_URL.split(",").map((u) => u.trim());
       return urls[0];
     }
-    return "https://primetrade-opal.vercel.app";
+    return "https://primetradeclient.vercel.app";
   }
 
   getFromAddress() {
