@@ -44,7 +44,7 @@ const AdminProfilePage = () => {
   const [imagePreview, setImagePreview] = useState(null);
   
   const fileInputRef = useRef(null);
-  const BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://primetrade-erme.onrender.com";
 
   // Fetch admin profile data
   const fetchAdminProfile = async () => {
