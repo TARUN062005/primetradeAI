@@ -82,7 +82,8 @@ app.use(
  * Example .env:
  * CLIENT_URL=http://localhost:5173,http://localhost:5174
  */
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173,http://localhost:5174')
+const allowedOrigins = (process.env.CLIENT_URL ||  "https://primetrade-opal.vercel.app",
+  "https://primetradeclient.vercel.app")
   .split(',')
   .map((o) => o.trim())
   .filter(Boolean);
