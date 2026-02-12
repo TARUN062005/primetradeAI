@@ -156,11 +156,32 @@ class EmailService {
     let renderedHtml;
 
     try {
-      const templateStr = fs.readFileSync(templatePath, "utf-8");
-      renderedHtml = ejs.render(templateStr, templateData);
+      if (fs.existsSync(templatePath)) {
+        const templateStr = fs.readFileSync(templatePath, "utf-8");
+        renderedHtml = ejs.render(templateStr, templateData);
+      } else {
+        console.warn(`⚠️ Template not found: ${templatePath}. Using fallback.`);
+        // Generate Default Fallback Content
+        this.generateDefaultTemplate(templateName, templatePath);
+        // Retry reading (since generateDefaultTemplate writes it)
+        if (fs.existsSync(templatePath)) {
+          const templateStr = fs.readFileSync(templatePath, "utf-8");
+          renderedHtml = ejs.render(templateStr, templateData);
+        } else {
+          // Ultimate fallback if write fails (e.g. read-only filesystem)
+          renderedHtml = `
+               <h1>${options.subject || 'Notification'}</h1>
+               <p>Hello ${data.name || 'User'},</p>
+               <p>${options.text || 'Please check your account.'}</p>
+               ${data.verificationUrl ? `<p><a href="${data.verificationUrl}">Verify Email</a></p>` : ''}
+               ${data.magicLink ? `<p><a href="${data.magicLink}">Login</a></p>` : ''}
+               ${data.otp ? `<p>Your code is: <b>${data.otp}</b></p>` : ''}
+             `;
+        }
+      }
     } catch (err) {
       console.error(`❌ EJS Render Error (${templateName}):`, err.message);
-      renderedHtml = `<p>Notification from ${this.appName}</p>`;
+      renderedHtml = `<p>Notification from ${this.appName}. Please contact support if this message is empty.</p>`;
     }
 
     return await this.sendHtmlEmail(
