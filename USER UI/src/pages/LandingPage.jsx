@@ -71,7 +71,10 @@ const LandingPage = () => {
             Start Free <ArrowRight className="ml-2" />
           </Link>
           <button className="w-full sm:w-auto border border-slate-200 px-10 py-4 rounded-2xl text-lg font-bold text-slate-700 hover:bg-slate-50 transition-colors">
-            View Documentation
+            <Link
+            to="https://github.com/TARUN062005/primetradeAI/blob/main/README.MD"
+            className="w-full sm:w-auto bg-primary-600 text-white px-10 py-4 rounded-2xl text-lg font-bold flex items-center justify-center shadow-xl shadow-primary-200 hover:scale-105 transition-transform"
+          >View Documentation</Link>
           </button>
         </div>
       </header>
