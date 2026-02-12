@@ -10,29 +10,26 @@ class EmailService {
     this.appName = process.env.APP_NAME || "AuthSystem";
     this.templatesPath = path.join(__dirname, "../../../templates/emails");
 
-    // ✅ Create transporter once
+    // ✅ Create transporter using 'service: gmail' (Simplest & Most Reliable for Gmail)
     this.transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT, 10) || 587,
-      secure: process.env.EMAIL_SECURE === "true", // true for 465, false for 587
+      service: "gmail", // Automatically sets host=smtp.gmail.com, port=465, secure=true
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
-      tls: {
-        // ✅ in production: true -> reject unauthorized
-        // ✅ in dev: false -> allow self-signed (avoid smtp debug pain)
-        rejectUnauthorized: isProduction,
-      },
+      // Connection fail-safes
+      connectionTimeout: 10000, // 10 seconds
+      greetingTimeout: 5000,    // 5 seconds
+      socketTimeout: 10000,     // 10 seconds
+      logger: !isProduction,    // Log in dev
+      debug: !isProduction      // Debug in dev
     });
 
     // Ensure template directory & templates
     this.initTemplates();
 
-    // Optional quick SMTP verification
-    if (!isProduction) {
-      this.verifyConnection().catch(() => { });
-    }
+    // Verify connection on startup
+    this.verifyConnection().catch(() => { });
   }
 
   // ---------------------------------------------------------
