@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  /* --- Brand Colors --- */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  /* --- Slate Palette (Used for Dashboard/Settings) --- */
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f7fed;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-slate-950: #020617;
+}
+
+@layer base {
+  :root {
+    --background: #f8fafc; /* slate-50 */
+    --foreground: #0f172a; /* slate-900 */
+  }
+
+  .dark {
+    --background: #020617; /* slate-950 */
+    --foreground: #f8fafc; /* slate-50 */
+    
+    /* Override slate colors in dark mode for better contrast */
+    --color-slate-900: #f8fafc;
+    --color-slate-800: #f1f5f9;
+    --color-slate-50: #0f172a;
+    --color-slate-100: #1e293b;
+    --color-slate-200: #334155;
+  }
+
+  body {
+    @apply bg-[var(--background)] text-[var(--foreground)] antialiased transition-colors duration-300;
+    @apply selection:bg-primary-100 selection:text-primary-900;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer components {
+  /* Dynamic Glassmorphism (Adapts to Dark Mode) */
+  .glass-card {
+    @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-white/20 dark:border-slate-800/50 shadow-xl;
+  }
+
+  /* Interactive Elements */
+  .input-field {
+    @apply w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-primary-600 transition-all;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-primary-200 dark:shadow-none transition-all active:scale-95;
+  }
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
