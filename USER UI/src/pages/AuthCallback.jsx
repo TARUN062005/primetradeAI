@@ -47,7 +47,7 @@ const AuthCallback = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('login_timestamp');
         toast.error('Failed to finalize login. Please try again.');
-        navigate('/auth');
+        navigate('/auth?error=login_failed');
       }
     };
 

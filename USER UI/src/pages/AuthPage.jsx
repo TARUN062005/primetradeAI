@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 // ✅ Normalize backend URL to prevent double slash issues
-const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000').replace(/\/+$/, '');
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://primetrade-erme.onrender.com').replace(/\/+$/, '');
 
 const AuthPage = () => {
   const [mode, setMode] = useState('login'); // 'login', 'register'

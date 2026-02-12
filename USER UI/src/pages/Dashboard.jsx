@@ -15,7 +15,7 @@ const Dashboard = () => {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://primetrade-erme.onrender.com';
 
   useEffect(() => {
     const fetchActivity = async () => {
