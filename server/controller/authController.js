@@ -7,7 +7,7 @@ const PasswordlessStrategy = require('../src/core/auth/strategies/PasswordlessSt
 const ActivityService = require('../src/core/services/ActivityService');
 const { prisma } = require('../utils/dbConnector');
 
-const BASE_URL = (process.env.BASE_URL || "http://localhost:5000").replace(/\/+$/, "");
+const BASE_URL = (process.env.BASE_URL || "https://primetrade-erme.onrender.com").replace(/\/+$/, "");
 
 const authManager = new AuthManager();
 const userService = new UserService();
@@ -82,11 +82,7 @@ function getPrimaryClientUrl() {
     const urls = process.env.CLIENT_URL.split(',').map(url => url.trim());
     return urls[0];
   }
-  if (process.env.CLIENT_USER) {
-    const port = process.env.CLIENT_USER || '5173';
-    return `http://localhost:${port}`;
-  }
-  return 'http://localhost:5173';
+  return 'https://primetrade-opal.vercel.app';
 }
 
 class AuthController {
@@ -235,11 +231,11 @@ class AuthController {
   async register(req, res) {
     try {
       const { email, password, name } = req.body;
-      
+
       // 1. Create user with emailVerified: false
-      const result = await localStrategy.register({ 
-        email, 
-        password, 
+      const result = await localStrategy.register({
+        email,
+        password,
         name
       });
 
@@ -247,11 +243,11 @@ class AuthController {
 
       // 2. Generate verification token
       const verificationToken = authManager.generateMagicToken(email);
-      
+
       // Store the actual token, not the JWT
       const rawToken = verificationToken.token;
       const decoded = authManager.verifyMagicToken(rawToken);
-      
+
       await userService.createOTP({
         userId: result.user.id,
         identifier: email,
@@ -266,13 +262,13 @@ class AuthController {
       await emailService.sendVerificationEmail(email, verifyUrl, name);
 
       // 4. Return success but user CANNOT login yet
-      res.status(201).json({ 
-        success: true, 
+      res.status(201).json({
+        success: true,
         message: 'Registration successful! Please check your email to verify your account.',
         user: result.user,
         requiresVerification: true
       });
-      
+
     } catch (error) {
       res.status(400).json({ success: false, message: error.message });
     }
@@ -280,7 +276,7 @@ class AuthController {
 
   async verifyEmail(req, res) {
     const { token } = req.body;
-    
+
     // ⭐ NEW: Prevent duplicate processing
     if (processingTokens.has(token)) {
       console.log('Token already being processed, skipping duplicate');
@@ -289,13 +285,13 @@ class AuthController {
         message: 'Verification is already in progress. Please wait.'
       });
     }
-    
+
     processingTokens.set(token, true);
-    
+
     try {
       console.log('=== VERIFY EMAIL DEBUG START ===');
       console.log('JWT Token received:', token);
-      
+
       if (!token) {
         throw new Error('No token provided');
       }
@@ -303,33 +299,33 @@ class AuthController {
       // 1. Verify the JWT token
       const decoded = authManager.verifyMagicToken(token);
       console.log('Decoded JWT:', decoded);
-      
+
       // ⭐ FIX: Check if user is already verified FIRST
       console.log('Checking if user already verified...');
       const user = await userService.findByEmail(decoded.email);
       console.log('User found:', user ? `ID: ${user.id}` : 'No user found');
-      
+
       if (!user) {
         throw new Error('User not found');
       }
-      
+
       // ⭐ NEW: If already verified, just return success
       if (user.emailVerified) {
         console.log('User already verified, returning success');
-        return res.status(200).json({ 
-          success: true, 
+        return res.status(200).json({
+          success: true,
           message: 'Email is already verified. You can login.',
           user: userService.sanitize(user)
         });
       }
-      
+
       const actualToken = decoded.token;
       console.log('Actual token to search for:', actualToken);
-      
+
       console.log('Looking for OTP...');
       const otp = await userService.verifyOTP(decoded.email, actualToken, 'VERIFICATION');
       console.log('OTP found:', !!otp);
-      
+
       if (!otp) {
         // If OTP not found but user exists, maybe it was already used
         throw new Error('Invalid, expired, or already used verification link');
@@ -337,12 +333,12 @@ class AuthController {
 
       console.log('Current emailVerified status:', user.emailVerified);
       console.log('Updating user...');
-      
-      await userService.update(user.id, { 
+
+      await userService.update(user.id, {
         emailVerified: true,
         isActive: true
       });
-      
+
       console.log('User updated successfully');
 
       // 3. Now send welcome email
@@ -353,19 +349,19 @@ class AuthController {
       await ActivityService.log(user.id, 'Email Verified', 'User verified their email address', req.ip);
 
       console.log('=== VERIFY EMAIL DEBUG END - SUCCESS ===');
-      
-      res.status(200).json({ 
-        success: true, 
+
+      res.status(200).json({
+        success: true,
         message: 'Email verified successfully! You can now login.',
         user: userService.sanitize(user)
       });
-      
+
     } catch (error) {
       console.log('=== VERIFY EMAIL DEBUG END - ERROR ===');
       console.log('Error:', error.message);
-      
-      res.status(400).json({ 
-        success: false, 
+
+      res.status(400).json({
+        success: false,
         message: error.message
       });
     } finally {
@@ -379,29 +375,29 @@ class AuthController {
   async resendVerification(req, res) {
     try {
       const { email } = req.body;
-      
+
       if (!email) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Email is required' 
+        return res.status(400).json({
+          success: false,
+          message: 'Email is required'
         });
       }
 
       const user = await userService.findByEmail(email);
-      
+
       if (!user) {
         // Don't reveal if user exists (security)
-        return res.status(200).json({ 
-          success: true, 
-          message: 'If an account exists with this email, a verification link has been sent.' 
+        return res.status(200).json({
+          success: true,
+          message: 'If an account exists with this email, a verification link has been sent.'
         });
       }
 
       // Check if already verified
       if (user.emailVerified) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Email is already verified.' 
+        return res.status(400).json({
+          success: false,
+          message: 'Email is already verified.'
         });
       }
 
@@ -415,10 +411,10 @@ class AuthController {
 
       // Generate new verification token
       const verificationToken = authManager.generateMagicToken(email);
-      
+
       // Store the actual token
       const decoded = authManager.verifyMagicToken(verificationToken.token);
-      
+
       await userService.createOTP({
         userId: user.id,
         identifier: email,
@@ -435,16 +431,16 @@ class AuthController {
       // Log activity
       await ActivityService.log(user.id, 'Resent Verification', 'User requested new verification email', req.ip);
 
-      res.status(200).json({ 
-        success: true, 
-        message: 'Verification email sent successfully.' 
+      res.status(200).json({
+        success: true,
+        message: 'Verification email sent successfully.'
       });
-      
+
     } catch (error) {
       console.error('Resend verification error:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: 'Failed to resend verification email.' 
+      res.status(500).json({
+        success: false,
+        message: 'Failed to resend verification email.'
       });
     }
   }
@@ -475,7 +471,7 @@ class AuthController {
             // Generate new verification token
             const verificationToken = authManager.generateMagicToken(email);
             const decoded = authManager.verifyMagicToken(verificationToken.token);
-            
+
             await userService.createOTP({
               userId: user.id,
               identifier: email,
@@ -492,7 +488,7 @@ class AuthController {
             // Log activity
             await ActivityService.log(user.id, 'Resent Verification', 'User tried to login without verification', req.ip);
           }
-          
+
           return res.status(403).json({
             success: false,
             message: 'Please verify your email first. A new verification link has been sent to your email.',
@@ -508,7 +504,7 @@ class AuthController {
           });
         }
       }
-      
+
       if (error.message === 'ACCOUNT_SUSPENDED') {
         return res.status(403).json({
           success: false,
@@ -516,7 +512,7 @@ class AuthController {
           code: 'ACCOUNT_SUSPENDED'
         });
       }
-      
+
       res.status(401).json({ success: false, message: error.message });
     }
   }
@@ -561,10 +557,10 @@ class AuthController {
       if (!user) return res.status(200).json({ success: true, message: 'If an account exists, you will receive a reset link' });
 
       const resetToken = authManager.generateMagicToken(email);
-      
+
       // Store actual token
       const decoded = authManager.verifyMagicToken(resetToken.token);
-      
+
       await userService.createOTP({
         userId: user.id,
         identifier: email,
@@ -710,7 +706,7 @@ class AuthController {
 
       const token = authManager.generateMagicToken(email);
       const decoded = authManager.verifyMagicToken(token.token);
-      
+
       await userService.createOTP({
         userId: user.id,
         identifier: email,
