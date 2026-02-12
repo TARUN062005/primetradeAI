@@ -1,4 +1,3 @@
-````md
 # 🔐 MERN AuthSecure  
 ### Reusable Authentication System + Admin Dashboard
 
@@ -499,5 +498,3 @@ npm run dev
 * JWT_SECRET
 * Admin credentials
 * Firebase serviceAccountKey.json
-```
-```
