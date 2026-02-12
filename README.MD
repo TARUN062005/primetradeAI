@@ -306,7 +306,7 @@ cd ../ADMIN UI
 npm install
 npm run dev
 ```
-
+```
 Admin runs on:
 
 http://localhost:5174
@@ -314,7 +314,7 @@ http://localhost:5174
 | Backend API | http://localhost:5000 |
 | USER UI     | http://localhost:5173 |
 | ADMIN UI    | http://localhost:5174 |
-
+```
 ---
 
 ## 🔐 Environment Variables
