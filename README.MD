@@ -1,60 +1,72 @@
 ````md
-# 🔐 MERN AuthSecure (Reusable Auth + Admin Dashboard)
+# 🔐 MERN AuthSecure  
+### Reusable Authentication System + Admin Dashboard
 
-A modern **full-stack MERN authentication system** with **Admin Dashboard**, built for reusable production-ready login systems.  
-Includes **JWT auth, OAuth (Google/GitHub), Email OTP/Verification, Profile Uploads, Activity Tracking, and Firebase Push Notifications**.
+A production-ready **full-stack MERN authentication system** with a dedicated **Admin Dashboard**, built for scalable and reusable authentication architectures.
 
-![Node.js](https://img.shields.io/badge/Node.js-v18+-green)
-![Express](https://img.shields.io/badge/Express-v5.1.0-black)
-![React](https://img.shields.io/badge/React-Vite-blue)
-![MongoDB](https://img.shields.io/badge/MongoDB-Prisma-brightgreen)
+This project demonstrates a modular backend authentication core combined with separate User and Admin frontend applications.
+
+---
+
+## 📦 Tech Badges
+
+![Node.js](https://img.shields.io/badge/Node.js-v18+-339933?logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-Backend-black?logo=express&logoColor=white)
+![React](https://img.shields.io/badge/React-Vite-61DAFB?logo=react&logoColor=black)
+![MongoDB](https://img.shields.io/badge/MongoDB-Database-47A248?logo=mongodb&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-FCM-FFCA28?logo=firebase&logoColor=black)
 ![License](https://img.shields.io/badge/License-ISC-yellow)
 
 ---
 
-## 🌟 Features
+# ✨ Features
 
-### ✅ User Client
-- **🔑 JWT Authentication** — Secure login sessions
-- **📧 Email Authentication** — OTP / email verification support
-- **🧑 Profile Management** — Update details + profile image upload
-- **🎨 Dashboard Layout** — Sidebar + navbar + protected routes
-- **🕒 Activity Tracking** — Fetch user activity feed (`/api/user/activity`)
-- **⚙️ Settings Page** — Theme toggle + account actions (suspend/permanent)
+## 👤 User Application
 
-### ✅ Admin Client
-- **🛡️ Admin Login** — Dedicated admin authentication
-- **📊 Admin Dashboard** — Stats, user management UI
-- **📢 Broadcast Notifications UI** — Admin can push notifications/messages
-- **👥 Manage Users** — View users and manage status
-
-### ✅ Key Highlights
-- ✅ **Reusable Auth System** — Plug into any MERN project
-- ✅ **Modular Backend Core** — Strategy-based authentication system
-- ✅ **JWT + OAuth Ready** — Local + Google + GitHub
-- ✅ **No Mock Data** — MongoDB/Prisma-backed API responses
-- ✅ **Responsive UI** — Works across desktop and mobile
+- JWT-based authentication
+- OAuth login (Google & GitHub)
+- Passwordless / Magic link support
+- Email verification (OTP)
+- Profile management with image upload
+- Activity tracking (`/api/user/activity`)
+- Push notifications (Firebase Cloud Messaging)
+- Account suspension / reactivation
+- Responsive dashboard layout
 
 ---
 
-## 🏗️ Tech Stack
+## 🛡️ Admin Application
 
-### Backend
-- **Runtime:** Node.js v18+
-- **Framework:** Express.js
-- **Database:** MongoDB + Prisma
-- **Auth:** JWT + Strategy pattern (`LocalStrategy`, `OAuthStrategy`, `PasswordlessStrategy`)
-- **Email:** SMTP (Gmail recommended)
-- **Uploads:** Multer
-- **Push:** Firebase Admin SDK (FCM)
+- Dedicated admin authentication
+- Admin dashboard with statistics
+- User management (activate / suspend)
+- Broadcast push notifications
+- Admin profile & settings
 
-### Frontend (Client + Admin)
-- **Framework:** React (Vite)
-- **Routing:** React Router DOM
-- **Styling:** TailwindCSS
-- **UI Components:** shadcn/ui + Radix UI
-- **Icons:** lucide-react
-- **HTTP:** Axios
+---
+
+# 🏗 Architecture Overview
+
+### Backend Design
+
+- Strategy-based authentication system
+- Modular service layer:
+  - `UserService`
+  - `EmailService`
+  - `ActivityService`
+- Prisma ORM with MongoDB
+- Firebase Admin SDK integration
+- Structured controllers + middleware
+
+### Frontend Design
+
+- Separate User and Admin apps
+- Vite + React
+- TailwindCSS styling
+- Axios-based API integration
+- Protected routes
+- Modular authentication hooks
 
 ---
 
@@ -204,6 +216,8 @@ primetrade AI/
 │   │   ├── main.jsx
 │   │   └── index.css
 │   │
+│   ├── .env
+│   ├── .env.example
 │   ├── .gitignore
 │   ├── eslint.config.js
 │   ├── index.html
@@ -213,7 +227,7 @@ primetrade AI/
 │   ├── package.json
 │   ├── package-lock.json
 │   └── README.md
-````
+```
 
 ---
 
@@ -232,7 +246,7 @@ primetrade AI/
 
 ```bash
 git clone <your-repo-url>
-cd "ALL IN ONE PROJECT USE"
+cd ""
 ```
 
 ---
@@ -270,15 +284,15 @@ http://localhost:5000
 
 ---
 
-## 3️⃣ Setup Client (client/)
+## 3️⃣ Setup USER UI
 
 ```bash
-cd ../client
+cd ../USER UI
 npm install
 npm run dev
 ```
 
-Client runs on:
+USER UI runs on:
 
 ```
 http://localhost:5173
@@ -286,37 +300,29 @@ http://localhost:5173
 
 ---
 
-## 4️⃣ Setup Admin Client (adminClient/)
+## 4️⃣ Setup ADMIN UI
 
 ```bash
-cd ../adminClient
+cd ../ADMIN UI
 npm install
 npm run dev
 ```
 
 Admin runs on:
 
-```
 http://localhost:5174
-```
 
----
-
-## ✅ Port Summary
-
-| Service      | URL                                            |
-| ------------ | ---------------------------------------------- |
-| Backend API  | [http://localhost:5000](http://localhost:5000) |
-| Client       | [http://localhost:5173](http://localhost:5173) |
-| Admin Client | [http://localhost:5174](http://localhost:5174) |
+| Backend API | http://localhost:5000 |
+| USER UI     | http://localhost:5173 |
+| ADMIN UI    | http://localhost:5174 |
 
 ---
 
 ## 🔐 Environment Variables
 
-### ✅ Client Env (`client/.env`)
+### ✅ USER UI Env (`USER UI/.env`)
 
-Create file: `client/.env`
+Create file: `USER UI/.env`
 
 ```env
 # Backend API URL
@@ -361,7 +367,6 @@ BASE_URL=http://localhost:5000
 CLIENT_USER=5173
 
 # Email Configuration (Gmail SMTP)
-# IMPORTANT: EMAIL_PASS must be a Gmail 16-character App Password
 EMAIL_HOST=""
 EMAIL_PORT=587
 EMAIL_SECURE=false
@@ -393,8 +398,8 @@ FIREBASE_SERVICE_ACCOUNT_PATH=./firebase/serviceAccountKey.json
 
 This project supports Push Notifications using Firebase Cloud Messaging (FCM):
 
-* **Client:** Firebase Web Push
-* **Server:** Firebase Admin SDK
+* **USER UI:** Firebase Web Push  
+* **Server:** Firebase Admin SDK  
 
 Required server file:
 
@@ -446,14 +451,14 @@ npm run dev
 **Terminal 2**
 
 ```bash
-cd client
+cd USER UI
 npm run dev
 ```
 
 **Terminal 3**
 
 ```bash
-cd adminClient
+cd ADMIN UI
 npm run dev
 ```
 
@@ -468,7 +473,7 @@ npm run dev
 * Check `DATABASE_URL` is correct
 * Ensure port 5000 is not already used
 
-### Client not connecting to backend
+### USER UI not connecting to backend
 
 * Check backend is running at `http://localhost:5000`
 * Verify `.env` has correct `VITE_BACKEND_URL`
@@ -494,6 +499,5 @@ npm run dev
 * JWT_SECRET
 * Admin credentials
 * Firebase serviceAccountKey.json
-
 ```
 ```
