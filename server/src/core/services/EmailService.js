@@ -31,7 +31,7 @@ class EmailService {
 
     // Optional quick SMTP verification
     if (!isProduction) {
-      this.verifyConnection().catch(() => {});
+      this.verifyConnection().catch(() => { });
     }
   }
 
@@ -64,7 +64,7 @@ class EmailService {
     }
     return process.env.CLIENT_USER
       ? `http://localhost:${process.env.CLIENT_USER}`
-      : "http://localhost:5173";
+      : "https://primetrade-opal.vercel.app";
   }
 
   getFromAddress() {

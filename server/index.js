@@ -43,7 +43,7 @@ const initializeServices = async () => {
     // Initialize EmailService
     emailService = new EmailService();
     console.log('✅ EmailService initialized');
-    
+
     // Initialize and start BroadcastScheduler
     broadcastScheduler = new BroadcastScheduler(emailService);
     broadcastScheduler.start();
@@ -84,7 +84,7 @@ app.use(
  */
 const allowedOrigins = (
   process.env.CLIENT_URL ||
-  "https://primetrade-opal.vercel.app,https://primetradeclient.vercel.app"
+  "https://primetrade-opal.vercel.app,https://primetradeclient.vercel.app,https://primetrade-erme.onrender.com"
 )
   .split(',')
   .map((o) => o.trim())
@@ -393,7 +393,7 @@ app.get('/api/docs', (req, res) => {
           { method: 'GET', path: '/api/admin/notifications/:id', description: 'Get notification with stats' },
           { method: 'PATCH', path: '/api/admin/notifications/:id', description: 'Update notification (cancel, etc.)' },
           { method: 'DELETE', path: '/api/admin/notifications/:id', description: 'Delete notification' },
-          
+
           // Email Templates
           { method: 'GET', path: '/api/admin/email-templates', description: 'Get all email templates' },
           { method: 'POST', path: '/api/admin/email-templates', description: 'Create email template' },
@@ -404,12 +404,12 @@ app.get('/api/docs', (req, res) => {
           { method: 'POST', path: '/api/admin/email/broadcast', description: 'Broadcast email to all users (legacy)' },
           { method: 'POST', path: '/api/admin/notifications/broadcast', description: 'Broadcast notifications (legacy)' },
           { method: 'POST', path: '/api/admin/notifications/user/:id', description: 'Send notification to specific user (legacy)' },
-          
+
           // ✅ New Unified Broadcast System
           { method: 'POST', path: '/api/admin/broadcast/send', description: 'Unified broadcast (inApp/push/email) with scheduling' },
           { method: 'GET', path: '/api/admin/broadcast/scheduled', description: 'Get all scheduled broadcasts' },
           { method: 'DELETE', path: '/api/admin/broadcast/scheduled/:id', description: 'Cancel scheduled broadcast' },
-          
+
           // Analytics
           { method: 'GET', path: '/api/admin/broadcast/analytics/:id', description: 'Get broadcast analytics by ID' },
           { method: 'GET', path: '/api/admin/broadcast/analytics', description: 'Get all broadcast analytics' },
