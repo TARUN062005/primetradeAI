@@ -8,30 +8,40 @@ function initFirebase() {
   if (initialized) return;
 
   try {
-    const filePath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
+    let serviceAccount;
 
-    if (!filePath) {
-      console.warn("⚠️ FIREBASE_SERVICE_ACCOUNT_PATH missing. Push will not work.");
+    // 1. Try reading from ENV variable (for Production/Render)
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+      serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    }
+    // 2. Try reading from file path (for Development)
+    else if (process.env.FIREBASE_SERVICE_ACCOUNT_PATH) {
+      const filePath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
+      const fullPath = path.isAbsolute(filePath)
+        ? filePath
+        : path.join(process.cwd(), filePath);
+
+      if (fs.existsSync(fullPath)) {
+        serviceAccount = JSON.parse(fs.readFileSync(fullPath, 'utf-8'));
+      } else {
+        console.warn(`⚠️ Firebase service account file not found at: ${fullPath}`);
+        return;
+      }
+    } else {
+      console.warn("⚠️ Both FIREBASE_SERVICE_ACCOUNT and FIREBASE_SERVICE_ACCOUNT_PATH missing. Push will not work.");
       return;
     }
 
-    const fullPath = path.isAbsolute(filePath)
-      ? filePath
-      : path.join(process.cwd(), filePath);
-
-    if (!fs.existsSync(fullPath)) {
-      console.warn(`⚠️ Firebase service account file not found at: ${fullPath}`);
-      return;
+    if (serviceAccount) {
+      if (!admin.apps.length) {
+        admin.initializeApp({
+          credential: admin.credential.cert(serviceAccount),
+        });
+        console.log("✅ Firebase Admin initialized successfully");
+      }
+      initialized = true;
     }
 
-    const serviceAccount = JSON.parse(fs.readFileSync(fullPath, 'utf-8'));
-
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-
-    initialized = true;
-    console.log("✅ Firebase Admin initialized successfully");
   } catch (err) {
     console.error("❌ Firebase init error:", err.message);
   }
