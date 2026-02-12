@@ -82,7 +82,7 @@ function getPrimaryClientUrl() {
     const urls = process.env.CLIENT_URL.split(',').map(url => url.trim());
     return urls[0];
   }
-  return 'https://primetrade-opal.vercel.app';
+  return 'https://primetradeclient.vercel.app';
 }
 
 class AuthController {
