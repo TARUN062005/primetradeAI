@@ -29,6 +29,9 @@ const adminRoutes = require('./routes/admin.routes');
 const userPushRoutes = require('./routes/userPushRoutes');
 
 const app = express();
+// ✅ Required for Render (fixes X-Forwarded-For rate limit error)
+app.set('trust proxy', 1);
+
 
 // ✅ INITIALIZE BROADCAST SCHEDULER (IMPORTANT FOR SCHEDULED NOTIFICATIONS)
 let broadcastScheduler;
