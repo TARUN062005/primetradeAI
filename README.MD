@@ -6,7 +6,12 @@ A production-ready **full-stack MERN authentication system** with a dedicated **
 This project demonstrates a modular backend authentication core combined with separate User and Admin frontend applications.
 
 ---
+## DEMO Link
 
+USER UI: https://primetradeclient.vercel.app/
+ADMIN UI: https://primetrade-opal.vercel.app/admin/login
+
+---
 ## 📦 Tech Badges
 
 ![Node.js](https://img.shields.io/badge/Node.js-v18+-339933?logo=node.js&logoColor=white)
