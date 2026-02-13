@@ -1,0 +1,488 @@
+{
+  "info": {
+    "_postman_id": "a19a9cd3-fe38-4b0b-9ed7-2e1bde307a75",
+    "name": "Backend Checking",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "46198207"
+  },
+  "item": [
+    {
+      "name": "AUTHENTICATION",
+      "item": [
+        {
+          "name": "REGISTER NEW USER",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Test User\",\r\n  \"email\": \"testuser123@example.com\",\r\n  \"password\": \"Test@123456\",\r\n  \"role\": \"USER\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://primetrade-erme.onrender.com/api/auth/register",
+              "protocol": "https",
+              "host": [
+                "primetrade-erme",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "LOGIN USER",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"testuser123@example.com\",\r\n  \"password\": \"Test@123456\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://primetrade-erme.onrender.com/api/auth/login",
+              "protocol": "https",
+              "host": [
+                "primetrade-erme",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "LOGOUT USER",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGViYzk4Y2JiZDMzYTI5Mjc1M2Q4NCIsInJvbGUiOiJVU0VSIiwiZW1haWwiOiJ0ZXN0dXNlcjEyM0BleGFtcGxlLmNvbSIsImF1dGhQcm92aWRlciI6IkxPQ0FMIiwiaWF0IjoxNzcwOTYyNTg4LCJleHAiOjE3NzE1NjczODh9.-fW-kgZjQWRTwsIgaYRfqL3_r7Pfwf9tTNiQOig6Ipo",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"success\": true,\r\n  \"message\": \"Logged out successfully\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://primetrade-erme.onrender.com/api/auth/logout",
+              "protocol": "https",
+              "host": [
+                "primetrade-erme",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "REFRESH TOKEN",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGViYzk4Y2JiZDMzYTI5Mjc1M2Q4NCIsInJvbGUiOiJVU0VSIiwiZW1haWwiOiJ0ZXN0dXNlcjEyM0BleGFtcGxlLmNvbSIsImF1dGhQcm92aWRlciI6IkxPQ0FMIiwiaWF0IjoxNzcwOTYyNTg4LCJleHAiOjE3NzE1NjczODh9.-fW-kgZjQWRTwsIgaYRfqL3_r7Pfwf9tTNiQOig6Ipo",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGViYzk4Y2JiZDMzYTI5Mjc1M2Q4NCIsInJvbGUiOiJVU0VSIiwiZW1haWwiOiJ0ZXN0dXNlcjEyM0BleGFtcGxlLmNvbSIsImF1dGhQcm92aWRlciI6IkxPQ0FMIiwiaWF0IjoxNzcwOTYzMzQ2LCJleHAiOjE3NzE1NjgxNDZ9.M5S04H42Biz3eEblvf5wE39PVZAirHAr2_LI4ieRVtg\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://primetrade-erme.onrender.com/api/auth/refresh",
+              "protocol": "https",
+              "host": [
+                "primetrade-erme",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "FORGOT PASSWORD",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"{{testuser123@example.com}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://primetrade-erme.onrender.com/api/auth/forgot-password",
+              "protocol": "https",
+              "host": [
+                "primetrade-erme",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "forgot-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "RESET PASSWORD",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"token\": \"valid-reset-token-from-email\",\r\n  \"newPassword\": \"NewSecurePass@456\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://primetrade-erme.onrender.com/api/auth/reset-password",
+              "protocol": "https",
+              "host": [
+                "primetrade-erme",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "reset-password"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "OAUTH AUTHENTICATION (GOOGLE/GITHUB)",
+      "item": [
+        {
+          "name": "GOOGLE OAUTH - INITIATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://primetrade-erme.onrender.com/api/auth/google",
+              "protocol": "https",
+              "host": [
+                "primetrade-erme",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "google"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GITHUB OAUTH - INITIATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://primetrade-erme.onrender.com/api/auth/github",
+              "protocol": "https",
+              "host": [
+                "primetrade-erme",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "github"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "OAUTH CALLBACK STRUCTURE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://primetradeclient.vercel.app/auth/callback?token=eyJhbGciOiJIUzI1NiIs...&isNewUser=true",
+              "protocol": "https",
+              "host": [
+                "primetradeclient",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "auth",
+                "callback"
+              ],
+              "query": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIs..."
+                },
+                {
+                  "key": "isNewUser",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "PROTECTED USER ROUTES",
+      "item": [
+        {
+          "name": "GET CURRENT USER PROFILE",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGViYzk4Y2JiZDMzYTI5Mjc1M2Q4NCIsInJvbGUiOiJVU0VSIiwiZW1haWwiOiJ0ZXN0dXNlcjEyM0BleGFtcGxlLmNvbSIsImF1dGhQcm92aWRlciI6IkxPQ0FMIiwiaWF0IjoxNzcwOTYyNTg4LCJleHAiOjE3NzE1NjczODh9.-fW-kgZjQWRTwsIgaYRfqL3_r7Pfwf9tTNiQOig6Ipo",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://primetrade-erme.onrender.com/api/auth/profile",
+              "protocol": "https",
+              "host": [
+                "primetrade-erme",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET USER PROFILE (DETAILED)",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "UPDATE USER SETTINGS",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGViYzk4Y2JiZDMzYTI5Mjc1M2Q4NCIsInJvbGUiOiJVU0VSIiwiZW1haWwiOiJ0ZXN0dXNlcjEyM0BleGFtcGxlLmNvbSIsImF1dGhQcm92aWRlciI6IkxPQ0FMIiwiaWF0IjoxNzcwOTYyNTg4LCJleHAiOjE3NzE1NjczODh9.-fW-kgZjQWRTwsIgaYRfqL3_r7Pfwf9tTNiQOig6Ipo",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Test User Updated\",\r\n  \"bio\": \"Software Developer and API Tester\",\r\n  \"gender\": \"MALE\",\r\n  \"phone\": \"+1234567890\",\r\n  \"location\": \"San Francisco\",\r\n  \"country\": \"USA\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://primetrade-erme.onrender.com/api/user/settings",
+              "protocol": "https",
+              "host": [
+                "primetrade-erme",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "user",
+                "settings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET LOG",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGViYzk4Y2JiZDMzYTI5Mjc1M2Q4NCIsInJvbGUiOiJVU0VSIiwiZW1haWwiOiJ0ZXN0dXNlcjEyM0BleGFtcGxlLmNvbSIsImF1dGhQcm92aWRlciI6IkxPQ0FMIiwiaWF0IjoxNzcwOTYzMzQ2LCJleHAiOjE3NzE1NjgxNDZ9.M5S04H42Biz3eEblvf5wE39PVZAirHAr2_LI4ieRVtg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://primetrade-erme.onrender.com/api/user/activity",
+              "protocol": "https",
+              "host": [
+                "primetrade-erme",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "user",
+                "activity"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE ACCOUNT (CRUD - DELETE)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGViYzk4Y2JiZDMzYTI5Mjc1M2Q4NCIsInJvbGUiOiJVU0VSIiwiZW1haWwiOiJ0ZXN0dXNlcjEyM0BleGFtcGxlLmNvbSIsImF1dGhQcm92aWRlciI6IkxPQ0FMIiwiaWF0IjoxNzcwOTYzMzQ2LCJleHAiOjE3NzE1NjgxNDZ9.M5S04H42Biz3eEblvf5wE39PVZAirHAr2_LI4ieRVtg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://primetrade-erme.onrender.com/api/user/account?type=suspend",
+              "protocol": "https",
+              "host": [
+                "primetrade-erme",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "user",
+                "account"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "suspend"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"{{testuser123@example.com}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://primetrade-erme.onrender.com/api/user/request-reactivation",
+              "protocol": "https",
+              "host": [
+                "primetrade-erme",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "user",
+                "request-reactivation"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
