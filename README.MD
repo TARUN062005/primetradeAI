@@ -13,6 +13,7 @@ ADMIN UI: https://primetrade-opal.vercel.app/admin/login
 
 🚨 ADMIN Credentials 
  username: admin@gmail.com
+
  password: abcde@06
 
 ---
