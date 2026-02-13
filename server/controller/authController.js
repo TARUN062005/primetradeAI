@@ -172,10 +172,15 @@ class AuthController {
         finalizeOAuthCodeUsed(code);
         await ActivityService.log(user.id, 'Login Success', 'Logged in via Google', req.ip);
 
-        if (isNewUser) await emailService.sendWelcome(user.email, user.name);
+        if (isNewUser) {
+          // Fire and forget email to prevent blocking login flow
+          emailService.sendWelcome(user.email, user.name).catch(err =>
+            console.error('Failed to send welcome email:', err)
+          );
+        }
 
         const clientUrl = getPrimaryClientUrl();
-        return res.redirect(`${clientUrl}/auth/callback?token=${token}`);
+        return res.redirect(`${clientUrl}/auth/callback?token=${token}&isNewUser=${isNewUser}`);
       } catch (err) {
         clearOAuthCode(code);
         throw err;
@@ -215,10 +220,15 @@ class AuthController {
         finalizeOAuthCodeUsed(code);
         await ActivityService.log(user.id, 'Login Success', 'Logged in via GitHub', req.ip);
 
-        if (isNewUser) await emailService.sendWelcome(user.email, user.name);
+        if (isNewUser) {
+          // Fire and forget email to prevent blocking login flow
+          emailService.sendWelcome(user.email, user.name).catch(err =>
+            console.error('Failed to send welcome email:', err)
+          );
+        }
 
         const clientUrl = getPrimaryClientUrl();
-        return res.redirect(`${clientUrl}/auth/callback?token=${token}`);
+        return res.redirect(`${clientUrl}/auth/callback?token=${token}&isNewUser=${isNewUser}`);
       } catch (err) {
         clearOAuthCode(code);
         throw err;

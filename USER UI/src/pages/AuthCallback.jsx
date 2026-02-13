@@ -37,7 +37,14 @@ const AuthCallback = () => {
 
         if (data.success) {
           setUser(data.user);
-          toast.success('Securely signed in!');
+
+          const isNewUser = params.get('isNewUser') === 'true';
+          if (isNewUser) {
+            toast.success('Account created successfully! Welcome to PrimeTrade.', { duration: 5000 });
+          } else {
+            toast.success('Welcome back! Successfully logged in.');
+          }
+
           navigate('/dashboard');
         } else {
           throw new Error(data.message);
