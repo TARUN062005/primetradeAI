@@ -1,60 +1,21 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require('resend');
 const ejs = require("ejs");
 const fs = require("fs");
 const path = require("path");
 
 class EmailService {
   constructor() {
-    const isProduction = process.env.NODE_ENV === "production";
-
     this.appName = process.env.APP_NAME || "AuthSystem";
     this.templatesPath = path.join(__dirname, "../../../templates/emails");
 
-    // ✅ Create transporter using 'service: gmail' (Simplest & Most Reliable for Gmail)
-    // ✅ Using manual SMTP settings with forced IPv4 to fix ETIMEDOUT
-    this.transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false, // true for 465, false for other ports (587 uses STARTTLS)
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      tls: {
-        rejectUnauthorized: false
-      },
-      // ⚠️ TIMEOUT SETTINGS ADDED TO DEBUG CONNECTION ISSUES
-      connectionTimeout: 10000,
-      greetingTimeout: 5000,
-      socketTimeout: 10000,
-      // ⚠️ CRITICAL: Force IPv4 usage to avoid IPv6 routing issues on Render
-      family: 4
-    });
+    // ✅ Initialize Resend with API Key
+    if (!process.env.RESEND_API_KEY) {
+      console.warn("⚠️ RESEND_API_KEY is missing! Emails will not be sent.");
+    }
+    this.resend = new Resend(process.env.RESEND_API_KEY);
 
     // Ensure template directory & templates
     this.initTemplates();
-
-    // Verify connection on startup
-    this.verifyConnection().catch(() => { });
-  }
-
-  // ---------------------------------------------------------
-  // ✅ Transporter helper (fixes your crash)
-  // ---------------------------------------------------------
-  getTransporter() {
-    if (!this.transporter) {
-      throw new Error("Email transporter not initialized");
-    }
-    return this.transporter;
-  }
-
-  async verifyConnection() {
-    try {
-      await this.transporter.verify();
-      console.log("✅ SMTP transporter verified successfully");
-    } catch (err) {
-      console.error("❌ SMTP verify failed:", err.message);
-    }
   }
 
   // ---------------------------------------------------------
@@ -69,7 +30,8 @@ class EmailService {
   }
 
   getFromAddress() {
-    return `"${this.appName}" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`;
+    // For Resend: use 'onboarding@resend.dev' if you haven't verified a domain yet
+    return process.env.EMAIL_FROM || "onboarding@resend.dev";
   }
 
   // ---------------------------------------------------------
@@ -199,22 +161,25 @@ class EmailService {
   // ✅ Main email senders
   // ---------------------------------------------------------
   async sendHtmlEmail(to, subject, htmlContent, textFallback = "") {
-    const transporter = this.getTransporter();
-
-    const mailOptions = {
-      from: this.getFromAddress(),
-      to,
-      subject,
-      html: htmlContent,
-      text: textFallback || "Please view this email in HTML mode.",
-    };
-
     try {
-      const info = await transporter.sendMail(mailOptions);
-      console.log(`📧 HTML Email Sent -> ${to} (${info.messageId})`);
-      return info;
+      // ✅ Send using Resend API
+      const data = await this.resend.emails.send({
+        from: this.getFromAddress(), // ensure this is a verified domain like 'onboarding@resend.dev' if testing
+        to: to,
+        subject: subject,
+        html: htmlContent,
+        text: textFallback || "Please unsubscribe from this list if you do not want to receive these emails.",
+      });
+
+      if (data.error) {
+        console.error("❌ Resend API Error:", data.error);
+        throw new Error(data.error.message);
+      }
+
+      console.log(`📧 HTML Email Sent -> ${to} (ID: ${data.id})`);
+      return data;
     } catch (error) {
-      console.error("❌ Failed to send HTML email:", error.message);
+      console.error("❌ Failed to send HTML email via Resend:", error.message);
       throw error;
     }
   }
