@@ -43,6 +43,19 @@ const AdminLogin = () => {
 
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] shadow-xl p-8 lg:p-10">
           <form onSubmit={handleLogin} className="space-y-6">
+            {/* Quick Fill Button */}
+            <button
+              type="button"
+              onClick={() => {
+                setEmail("admin@gmail.com");
+                setPassword("abcde@06");
+                toast.success("Credentials Auto-filled!");
+              }}
+              className="w-full text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 py-2 rounded-xl mb-4 transition-colors dashed border border-indigo-200"
+            >
+              ⚡ Quick Fill Test Credentials
+            </button>
+
             <div className="space-y-2">
               <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Admin Email</label>
               <div className="relative group">

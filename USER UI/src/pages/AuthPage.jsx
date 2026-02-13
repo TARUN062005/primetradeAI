@@ -160,7 +160,7 @@ const AuthPage = () => {
               {mode === 'register' && 'Get started'}
             </h2>
             <p className="text-slate-500 font-medium">
-              Enter your credentials to access your dashboard.
+Please sign in with Google or GitHub as email services are currently unavailable.
             </p>
           </div>
 
