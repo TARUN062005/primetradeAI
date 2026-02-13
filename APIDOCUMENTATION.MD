@@ -2224,496 +2224,144 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ---
 
 # 🗄️ **7. DATABASE SCHEMA**
-// ----------------- Datasource & Generator -----------------
-datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
-}
 
-generator client {
-  provider = "prisma-client-js"
-}
-
-// ----------------- Enums -----------------
-enum UserRole {
-  USER
-  ADMIN
-}
-
-enum Gender {
-  MALE
-  FEMALE
-  OTHER
-}
-
-enum OtpType {
-  VERIFICATION
-  LOGIN
-  PASSWORD_RESET
-  ACCOUNT_LINKING
-  PASSWORD_CHANGE
-  ACCOUNT_DELETION
-}
-
-enum AccountType {
-  PRIMARY
-  SECONDARY
-}
-
-enum AuthProvider {
-  LOCAL
-  GOOGLE
-  GITHUB
-  FACEBOOK
-  TWITTER
-  MAGIC_LINK
-}
-
-enum NotificationType {
-  SYSTEM
-  SECURITY
-  ANNOUNCEMENT
-  MARKETING
-}
-
-enum NotificationTarget {
-  ALL_USERS
-  SINGLE_USER
-  SELECTED_USERS
-}
-
-enum NotificationPriority {
-  NORMAL
-  HIGH
-  URGENT
-}
-
-enum AdminActionType {
-  USER_SUSPENDED
-  USER_REACTIVATED
-  USER_DELETED
-  USER_ROLE_CHANGED
-  USER_PROFILE_UPDATED
-  BROADCAST_NOTIFICATION_SENT
-  BROADCAST_EMAIL_SENT
-  BROADCAST_SCHEDULED
-  BROADCAST_CANCELLED
-}
-
-enum AdminPermission {
-  MANAGE_USERS
-  MANAGE_ADMINS
-  SEND_BROADCASTS
-  VIEW_AUDIT_LOGS
-  MANAGE_SYSTEM_SETTINGS
-  VIEW_ANALYTICS
-  EXPORT_DATA
-  MANAGE_ROLES
-  SCHEDULE_BROADCASTS
-}
-
-// NEW: Push token platform type
-enum PushPlatform {
-  WEB
-  ANDROID
-  IOS
-}
-
-// NEW: Email template type
-enum EmailTemplateType {
-  GENERIC
-  MARKETING
-  TRANSACTIONAL
-  SECURITY
-}
-
-// ----------------- Models -----------------
-
+## **User Model**
+```prisma
 model User {
-  id   String   @id @default(auto()) @map("_id") @db.ObjectId
-  role UserRole @default(USER)
-
-  // Authentication
-  email        String?      @unique
-  phone        String?
-  password     String?
-  authProvider AuthProvider @default(LOCAL)
-
-  // Social IDs
-  googleId   String? @unique
-  githubId   String? @unique
-  facebookId String? @unique
-  twitterId  String?
-
-  // Profile
-  name         String?
-  gender       Gender?
-  dob          DateTime?
-  profileImage String?
-  bio          String?
-
-  // Modern profile
-  location String?
-  country  String?
-
-  // Verification status
-  emailVerified Boolean @default(false)
-  phoneVerified Boolean @default(false)
-  isActive      Boolean @default(true)
-
-  // Email subscription control (Unsubscribe support)
-  emailSubscribed Boolean @default(true)
-
-  // Linked accounts & relations
-  linkedAccounts LinkedAccount[]
-  addresses      Address[]
-  otps           Otp[]
-  sessions       Session[]
-  activityLogs   ActivityLog[]
-
-  // Notification system
-  notifications UserNotification[]
-
-  // Push notification tokens (multiple devices supported)
-  pushTokens PushToken[]
-
-  // Admin relations
-  createdNotifications Notification[]  @relation("AdminNotifications")
-  adminAuditLogs       AdminAuditLog[] @relation("AdminAudit")
-
-  // Admin profile and permissions
-  adminProfile     AdminProfile?            @relation("AdminProfile")
-  adminPermissions AdminPermissionMapping[] @relation("AdminPermissions")
-
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  email           String    @unique
+  password        String?   // Null for OAuth users
+  name            String
+  profileImage    String?
+  phone           String?
+  
+  // Profile Details
+  bio             String?
+  gender          String?
+  dob             DateTime?
+  location        String?
+  country         String?
+  
+  // Status
+  role            Role      @default(USER)
+  authProvider    AuthProvider @default(LOCAL)
+  emailVerified   Boolean   @default(false)
+  phoneVerified   Boolean   @default(false)
+  isActive        Boolean   @default(true)
+  emailSubscribed Boolean   @default(true)
+  
   // Security
-  loginAttempts Int       @default(0)
-  lastLogin     DateTime?
-  lockUntil     DateTime?
-
-  // Metadata
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  Notification     Notification[]
-  EmailTemplate    EmailTemplate[]
-  DeliveryTracking DeliveryTracking[]
-
-  @@index([authProvider])
-  @@index([createdAt])
+  loginAttempts   Int       @default(0)
+  lockUntil       DateTime?
+  lastLogin       DateTime?
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  tasks           Task[]
+  sessions        Session[]
+  otps            OTP[]
+  pushTokens      PushToken[]
+  notifications   UserNotification[]
+  linkedAccounts  LinkedAccount[]
+  addresses       Address[]
+  adminProfile    AdminProfile?
+  adminPermissions AdminPermissionMapping[]
+  activities      ActivityLog[]
+  adminActions    AdminAuditLog[] @relation("admin_actions")
+  
+  @@index([email])
   @@index([role])
   @@index([isActive])
-  @@index([emailSubscribed])
 }
+```
 
-// Tracks specific actions for the "Account Activity" UI component
-model ActivityLog {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  action    String
-  details   String?
-  ip        String?
-  createdAt DateTime @default(now())
+---
 
+## **Task/Notes Model**
+```prisma
+model Task {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  status      String   @default("pending")
+  priority    String   @default("medium")
+  dueDate     DateTime?
+  tags        String[]
+  category    String   @default("general")
+  
+  // Relations
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
   @@index([userId])
-  @@index([createdAt])
-}
-
-model Session {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  token     String   @unique
-  userAgent String?
-  ipAddress String?
-  expiresAt DateTime
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@index([expiresAt])
-}
-
-model LinkedAccount {
-  id         String      @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String      @db.ObjectId
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type       AccountType
-  email      String?
-  phone      String?
-  isVerified Boolean     @default(false)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-
-  @@unique([userId, email])
-  @@unique([userId, phone])
-  @@index([userId])
-}
-
-model Address {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  line1     String
-  line2     String?
-  city      String
-  state     String
-  country   String   @default("India")
-  pincode   String
-  isDefault Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-}
-
-model Otp {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String?  @db.ObjectId
-  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  identifier String
-  code       String
-  type       OtpType
-  expiresAt  DateTime
-  metadata   Json?
-  createdAt  DateTime @default(now())
-
-  @@index([identifier, type])
-  @@index([expiresAt])
-}
-
-// ----------------- PUSH TOKENS -----------------
-
-model PushToken {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @db.ObjectId
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  token     String       @unique
-  platform  PushPlatform @default(WEB)
-  deviceId  String?
-  userAgent String?
-  lastUsed  DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@index([platform])
-  @@index([createdAt])
-}
-
-// ----------------- NOTIFICATIONS -----------------
-
-model Notification {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  title   String
-  message String
-
-  type     NotificationType     @default(SYSTEM)
-  priority NotificationPriority @default(NORMAL)
-
-  target NotificationTarget @default(ALL_USERS)
-
-  // CTA
-  ctaLabel String?
-  ctaUrl   String?
-
-  // Rich content
-  bannerUrl String?
-
-  // Channels
-  sendInApp Boolean @default(true)
-  sendEmail Boolean @default(false)
-  sendPush  Boolean @default(false)
-
-  // Scheduling
-  sendMode    String    @default("NOW") // NOW | LATER | CANCELLED
-  scheduledAt DateTime?
-
-  // Expiry / TTL
-  expiryDays Int       @default(7)
-  expiresAt  DateTime?
-
-  // Email specific
-  emailSubject  String?
-  emailTemplate String? // HTML/EJS template
-
-  // Stats tracking
-  inAppCreated Int    @default(0)
-  pushSent     Int    @default(0)
-  emailSent    Int    @default(0)
-  totalTargets Int    @default(0)
-  status       String @default("DRAFT") // DRAFT, SCHEDULED, SENDING, COMPLETED, FAILED, CANCELLED
-
-  // If target = SINGLE_USER
-  userId String? @db.ObjectId
-  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // Admin creator reference
-  createdById String? @db.ObjectId
-  createdBy   User?   @relation("AdminNotifications", fields: [createdById], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  userNotifications UserNotification[]
-  DeliveryTracking  DeliveryTracking[]
-
-  @@index([type])
+  @@index([status])
   @@index([priority])
-  @@index([target])
-  @@index([createdAt])
-  @@index([userId])
-  @@index([createdById])
-  @@index([scheduledAt])
-  @@index([expiresAt])
-  @@index([sendMode])
-  @@index([status])
+  @@index([dueDate])
 }
+```
 
-model UserNotification {
-  id             String @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String @db.ObjectId
-  notificationId String @db.ObjectId
+---
 
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
-
-  isRead    Boolean   @default(false)
-  readAt    DateTime?
-  createdAt DateTime  @default(now())
-
-  @@unique([userId, notificationId])
-  @@index([userId])
-  @@index([notificationId])
-  @@index([isRead])
-}
-
-// ----------------- EMAIL TEMPLATES -----------------
-
-model EmailTemplate {
-  id          String            @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  subject     String
-  htmlContent String
-  type        EmailTemplateType @default(GENERIC)
-  variables   String[] // ["name", "email", "message", "unsubscribeUrl"]
-
-  isActive    Boolean @default(true)
-  createdById String? @db.ObjectId
-  createdBy   User?   @relation(fields: [createdById], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+## **Notification Models**
+```prisma
+model Notification {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  message         String
+  type            String   @default("SYSTEM")
+  priority        String   @default("NORMAL")
+  bannerUrl       String?
+  ctaLabel        String?
+  ctaUrl          String?
+  
+  // Targeting
+  target          String   @default("ALL_USERS")
+  userId          String?  @db.ObjectId // For SINGLE_USER target
+  
+  // Channels
+  sendInApp       Boolean  @default(true)
+  sendPush        Boolean  @default(false)
+  sendEmail       Boolean  @default(false)
+  
+  // Email specific
+  emailSubject    String?
+  emailTemplate   String?
+  
+  // Scheduling
+  sendMode        String   @default("NOW")
+  scheduledAt     DateTime?
+  expiresAt       DateTime?
+  expiryDays      Int      @default(7)
+  
+  // Stats
+  totalTargets    Int      @default(0)
+  inAppCreated    Int      @default(0)
+  pushSent        Int      @default(0)
+  emailSent       Int      @default(0)
+  
+  // Status
+  status          String   @default("DRAFT")
+  
+  // Relations
+  createdById     String   @db.ObjectId
+  createdBy       User     @relation(fields: [createdById], references: [id])
+  userNotifications UserNotification[]
+  deliveryTracking DeliveryTracking[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
   @@index([type])
-  @@index([isActive])
-  @@index([createdAt])
-}
-
-// ----------------- DELIVERY TRACKING -----------------
-
-model DeliveryTracking {
-  id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  notificationId String       @db.ObjectId
-  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
-
-  userId String @db.ObjectId
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  channel String // "in_app", "email", "push"
-  status  String // "queued", "sent", "delivered", "opened", "clicked", "failed"
-
-  deviceToken  String?
-  emailAddress String?
-
-  sentAt      DateTime?
-  deliveredAt DateTime?
-  openedAt    DateTime?
-  clickedAt   DateTime?
-
-  errorMessage String?
-  retryCount   Int     @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([notificationId])
-  @@index([userId])
-  @@index([channel])
   @@index([status])
-  @@index([createdAt])
-}
-
-// ----------------- ADMIN AUDIT LOG -----------------
-
-model AdminAuditLog {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  adminId String @db.ObjectId
-  admin   User   @relation("AdminAudit", fields: [adminId], references: [id], onDelete: Cascade)
-
-  actionType   AdminActionType
-  targetUserId String?         @db.ObjectId
-  details      String?
-  ip           String?
-  metadata     Json? // Additional data like notificationId, etc.
-  createdAt    DateTime        @default(now())
-
-  @@index([adminId])
-  @@index([actionType])
-  @@index([createdAt])
-  @@index([targetUserId])
-}
-
-// ----------------- ADMIN PROFILE -----------------
-
-model AdminProfile {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  adminId String @unique @db.ObjectId
-  admin   User   @relation("AdminProfile", fields: [adminId], references: [id], onDelete: Cascade)
-
-  // Extended admin info
-  title          String?
-  department     String?
-  employeeId     String?   @unique
-  signature      String?
-  joiningDate    DateTime?
-  officeLocation String?
-
-  // Contact info
-  backupEmail      String?
-  emergencyContact String?
-  workPhone        String?
-  timezone         String? @default("UTC")
-
-  // Preferences
-  language      String? @default("en")
-  theme         String? @default("light")
-  notifications Json?
-
-  // Metadata
-  lastSeen     DateTime?
-  totalActions Int       @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([title])
-  @@index([department])
-}
-
-// ----------------- ADMIN PERMISSIONS -----------------
-
-model AdminPermissionMapping {
-  id         String          @id @default(auto()) @map("_id") @db.ObjectId
-  adminId    String          @db.ObjectId
-  admin      User            @relation("AdminPermissions", fields: [adminId], references: [id], onDelete: Cascade)
-  permission AdminPermission
-  grantedAt  DateTime        @default(now())
-  grantedBy  String?         @db.ObjectId
-
-  @@unique([adminId, permission])
+  @@index([sendMode])
+  @@index([scheduledAt])
 }
 ```
 
@@ -2854,68 +2502,36 @@ model AdminPermissionMapping {
 # 📁 **10. FOLDER STRUCTURE REFERENCE**
 
 ```
-│── server/                          # Backend API (Node.js + Express + Prisma)
-│   ├── controller/                  # Controllers (auth, admin, user, push)
-│   │   ├── adminController.js
-│   │   ├── authController.js
-│   │   ├── pushController.js
-│   │   └── userController.js
+server/
+├── controller/           # Request handlers
+│   ├── authController.js
+│   ├── userController.js
+│   ├── adminController.js
+│   └── pushController.js
+│
+├── middleware/          # Express middleware
+│   ├── authmiddleware.js  # JWT verification, role checks
+│   └── upload.js         # Multer file upload
+│
+├── prisma/             # Database schema
+│   └── schema.prisma
+│
+├── routes/             # API route definitions
+│   ├── auth.routes.js
+│   ├── user.routes.js
+│   ├── admin.routes.js
+│   └── userPushRoutes.js
+│
+├── src/
+│   ├── core/           # Core business logic
+│   │   ├── auth/       # Authentication strategies
+│   │   └── services/   # Service layer
 │   │
-│   ├── middleware/                  # Auth & upload middleware
-│   │   ├── authmiddleware.js
-│   │   └── upload.js
-│   │
-│   ├── prisma/                      # Prisma schema
-│   │   └── schema.prisma
-│   │
-│   ├── routes/                      # API route definitions
-│   │   ├── admin.routes.js
-│   │   ├── auth.routes.js
-│   │   ├── user.routes.js
-│   │   └── userPushRoutes.js
-│   │
-│   ├── scripts/                     # One-time scripts
-│   │   └── seedAdmin.js
-│   │
-│   ├── src/core/                    # Auth core (strategy-based)
-│   │   ├── auth/
-│   │   │   ├── AuthManager.js
-│   │   │   └── strategies/
-│   │   │       ├── LocalStrategy.js
-│   │   │       ├── OAuthStrategy.js
-│   │   │       └── PasswordlessStrategy.js
-│   │   │
-│   │   └── services/
-│   │       ├── ActivityService.js
-│   │       ├── EmailService.js
-│   │       └── UserService.js
-│   │
-│   ├── templates/emails/            # Email templates (EJS)
-│   │   ├── account-locked.ejs
-│   │   ├── magic-link.ejs
-│   │   ├── otp.ejs
-│   │   ├── password-reset.ejs
-│   │   ├── verification-email.ejs
-│   │   └── welcome.ejs
-│   │
-│   ├── utils/                       # Utilities
-│   │   ├── dbConnector.js
-│   │   ├── seedAdmin.js
-│   │   ├── cron/
-│   │   │   └── broadcastScheduler.js
-│   │   └── push/
-│   │       └── fcm.js
-│   │
-│   ├── firebase/                    # Firebase Admin SDK
-│   │   └── serviceAccountKey.json
-│   │
-│   ├── .env
-│   ├── .env.example
-│   ├── .gitignore
-│   ├── index.js                     # Server entry point
-│   ├── package.json
-│   ├── package-lock.json
-│   └── README.md
+│   └── utils/          # Utilities
+│       ├── dbConnector.js
+│       └── push/fcm.js
+│
+└── index.js            # Application entry
 ```
 
 ---
