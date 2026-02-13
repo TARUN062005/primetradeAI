@@ -41,6 +41,22 @@ const AuthPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // ⚠️ TEMPORARY: Disable local auth due to email service issues
+    toast('Please sign in with Google or GitHub as email services are currently unavailable.', {
+      icon: '⚠️',
+      style: {
+        borderRadius: '10px',
+        background: '#FFF4E5',
+        color: '#663C00',
+        fontWeight: 'bold',
+      },
+      duration: 5000,
+    });
+    return;
+
+    /* 
+    // ORIGINAL LOGIC COMMENTED OUT FOR NOW
     setIsLoading(true);
 
     try {
@@ -93,6 +109,7 @@ const AuthPage = () => {
     } finally {
       setIsLoading(false);
     }
+    */
   };
 
   return (
@@ -148,7 +165,8 @@ const AuthPage = () => {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Form - VISUALLY DISABLED */}
+          <form onSubmit={handleSubmit} className="space-y-5 opacity-60 pointer-events-none grayscale select-none" aria-disabled="true">
             {mode === 'register' && (
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-400 uppercase ml-1">Full Name</label>
@@ -161,9 +179,8 @@ const AuthPage = () => {
                     name="name"
                     type="text"
                     placeholder="John Doe"
-                    required
-                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-primary-600 outline-none transition-all font-medium"
-                    onChange={handleInputChange}
+                    disabled
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-primary-600 outline-none transition-all font-medium cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -180,9 +197,8 @@ const AuthPage = () => {
                   name="email"
                   type="email"
                   placeholder="name@company.com"
-                  required
-                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-primary-600 outline-none transition-all font-medium"
-                  onChange={handleInputChange}
+                  disabled
+                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-primary-600 outline-none transition-all font-medium cursor-not-allowed"
                 />
               </div>
             </div>
@@ -190,14 +206,6 @@ const AuthPage = () => {
             <div className="space-y-1">
               <div className="flex justify-between items-center px-1">
                 <label className="text-xs font-bold text-slate-400 uppercase">Password</label>
-                {mode === 'login' && (
-                  <button
-                    type="button"
-                    className="text-xs font-bold text-primary-600 hover:text-primary-700"
-                  >
-                    Forgot?
-                  </button>
-                )}
               </div>
               <div className="relative group">
                 <Lock
@@ -208,27 +216,19 @@ const AuthPage = () => {
                   name="password"
                   type="password"
                   placeholder="••••••••"
-                  required
-                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-primary-600 outline-none transition-all font-medium"
-                  onChange={handleInputChange}
+                  disabled
+                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-primary-600 outline-none transition-all font-medium cursor-not-allowed"
                 />
               </div>
             </div>
 
             <button
-              disabled={isLoading}
-              className="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-primary-300 text-white font-bold py-4 rounded-2xl transition-all shadow-xl shadow-primary-200 flex items-center justify-center space-x-3 group"
+              disabled
+              className="w-full bg-slate-300 text-slate-500 font-bold py-4 rounded-2xl transition-all shadow-none flex items-center justify-center space-x-3 cursor-not-allowed"
             >
-              {isLoading ? (
-                <Loader2 className="animate-spin" size={22} />
-              ) : (
-                <>
-                  <span className="text-lg">
-                    {mode === 'login' ? 'Sign In' : 'Create Account'}
-                  </span>
-                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
+              <span className="text-lg">
+                {mode === 'login' ? 'Sign In (Disabled)' : 'Create Account (Disabled)'}
+              </span>
             </button>
           </form>
 
