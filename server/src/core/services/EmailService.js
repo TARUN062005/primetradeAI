@@ -23,6 +23,10 @@ class EmailService {
       tls: {
         rejectUnauthorized: false
       },
+      // ⚠️ TIMEOUT SETTINGS ADDED TO DEBUG CONNECTION ISSUES
+      connectionTimeout: 10000,
+      greetingTimeout: 5000,
+      socketTimeout: 10000,
       // ⚠️ CRITICAL: Force IPv4 usage to avoid IPv6 routing issues on Render
       family: 4
     });
