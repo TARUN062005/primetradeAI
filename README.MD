@@ -366,38 +366,38 @@ APP_NAME="My Reusable Auth"
 
 # Database (Prisma + MongoDB)
 DATABASE_URL=""
-
-# Security
+# Security (REMOVE the default fallback in your code!)
 JWT_SECRET="generate-a-very-long-random-string-here"
 
 # Frontend Connection
 CLIENT_URL="http://localhost:5173,http://localhost:5174"
 BASE_URL=http://localhost:5000
 CLIENT_USER=5173
+# Email Configuration (Gmail)
+# IMPORTANT: EMAIL_PASS must be a 16-character "App Password"
+# EMAIL_HOST=smtp.gmail.com
+# EMAIL_PORT=587
+# EMAIL_SECURE=false
+# EMAIL_USER=""
+# EMAIL_PASS=""
+# EMAIL_FROM="noreply@.com"
+SENDGRID_API_KEY="SG.your_api_key_here"
+EMAIL_FROM="xyz@gmail.com"
+EMAIL_USER="xyz@gmail.com"
 
-# Email Configuration (Gmail SMTP)
-EMAIL_HOST=""
-EMAIL_PORT=587
-EMAIL_SECURE=false
-EMAIL_USER=""
-EMAIL_PASS=""
-EMAIL_FROM="noreply@tarun.com"
 
-# OAuth Credentials (Google)
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GOOGLE_CALLBACK_URL=
+# OAuth Credentials (Get these from Google/GitHub Developer Consoles)
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+GOOGLE_CALLBACK_URL="http://localhost:5000/api/auth/google/callback"
 
-# OAuth Credentials (GitHub)
-GITHUB_CLIENT_ID=
-GITHUB_CLIENT_SECRET=
+GITHUB_CLIENT_ID=""
+GITHUB_CLIENT_SECRET=""
 
-# Admin Seed Credentials
-ADMIN_EMAIL=
-ADMIN_PASSWORD=
-ADMIN_NAME=
+ADMIN_EMAIL=admin@gmail.com
+ADMIN_PASSWORD=abcde@06
+ADMIN_NAME=Tarun
 
-# Firebase Admin SDK
 FIREBASE_SERVICE_ACCOUNT_PATH=./firebase/serviceAccountKey.json
 ```
 
