@@ -272,11 +272,23 @@ class AuthController {
       });
 
       // 3. Send verification email
-      const clientUrl = getPrimaryClientUrl();
-      const verifyUrl = `${clientUrl}/verify-email?token=${rawToken}`;
-      await emailService.sendVerificationEmail(email, verifyUrl, name);
+      // 3. Send verification email
+      try {
+        const clientUrl = getPrimaryClientUrl();
+        const verifyUrl = `${clientUrl}/verify-email?token=${rawToken}`;
+        await emailService.sendVerificationEmail(email, verifyUrl, name);
+      } catch (emailError) {
+        console.error('Registration email failed:', emailError);
+        return res.status(201).json({
+          success: true,
+          message: `Registration successful, but failed to send verification email: ${emailError.message}`,
+          user: result.user,
+          requiresVerification: true,
+          emailFailed: true
+        });
+      }
 
-      // 4. Return success but user CANNOT login yet
+      // 4. Return success 
       res.status(201).json({
         success: true,
         message: 'Registration successful! Please check your email to verify your account.',

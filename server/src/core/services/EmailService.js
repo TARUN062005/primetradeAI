@@ -1,4 +1,4 @@
-const { Resend } = require('resend');
+const sgMail = require('@sendgrid/mail');
 const ejs = require("ejs");
 const fs = require("fs");
 const path = require("path");
@@ -8,11 +8,12 @@ class EmailService {
     this.appName = process.env.APP_NAME || "AuthSystem";
     this.templatesPath = path.join(__dirname, "../../../templates/emails");
 
-    // ✅ Initialize Resend with API Key
-    if (!process.env.RESEND_API_KEY) {
-      console.warn("⚠️ RESEND_API_KEY is missing! Emails will not be sent.");
+    // ✅ Initialize SendGrid with API Key
+    if (!process.env.SENDGRID_API_KEY) {
+      console.warn("⚠️ SENDGRID_API_KEY is missing! Emails will not be sent.");
+    } else {
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     }
-    this.resend = new Resend(process.env.RESEND_API_KEY);
 
     // Ensure template directory & templates
     this.initTemplates();
@@ -30,8 +31,8 @@ class EmailService {
   }
 
   getFromAddress() {
-    // For Resend: use 'onboarding@resend.dev' if you haven't verified a domain yet
-    return process.env.EMAIL_FROM || "onboarding@resend.dev";
+    // For SendGrid: MUST match a verified Single Sender Identity
+    return process.env.EMAIL_FROM || process.env.EMAIL_USER;
   }
 
   // ---------------------------------------------------------
@@ -162,24 +163,24 @@ class EmailService {
   // ---------------------------------------------------------
   async sendHtmlEmail(to, subject, htmlContent, textFallback = "") {
     try {
-      // ✅ Send using Resend API
-      const data = await this.resend.emails.send({
-        from: this.getFromAddress(), // ensure this is a verified domain like 'onboarding@resend.dev' if testing
+      const msg = {
         to: to,
+        from: this.getFromAddress(), // Use the verified sender
         subject: subject,
+        text: textFallback || "Please enable HTML to view this email.",
         html: htmlContent,
-        text: textFallback || "Please unsubscribe from this list if you do not want to receive these emails.",
-      });
+      };
 
-      if (data.error) {
-        console.error("❌ Resend API Error:", data.error);
-        throw new Error(data.error.message);
-      }
+      // ✅ Send using SendGrid API
+      const [response] = await sgMail.send(msg);
 
-      console.log(`📧 HTML Email Sent -> ${to} (ID: ${data.id})`);
-      return data;
+      console.log(`📧 HTML Email Sent -> ${to} (Status: ${response.statusCode})`);
+      return response;
     } catch (error) {
-      console.error("❌ Failed to send HTML email via Resend:", error.message);
+      console.error("❌ Failed to send HTML email via SendGrid:", error.message);
+      if (error.response) {
+        console.error(error.response.body);
+      }
       throw error;
     }
   }
