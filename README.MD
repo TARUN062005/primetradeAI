@@ -11,6 +11,10 @@ This project demonstrates a modular backend authentication core combined with se
 USER UI: https://primetradeclient.vercel.app/
 ADMIN UI: https://primetrade-opal.vercel.app/admin/login
 
+🚨 ADMIN Credentials 
+ username: admin@gmail.com
+ password: abcde@06
+
 ---
 ## 📦 Tech Badges
 
